@@ -43,13 +43,17 @@ var dataInputs = []dataInput{
 func main() {
 	route := mux.NewRouter()
 	connection.DataBaseConnection()
+	// Karna kita menggunakan styling external pada views yang tersimpan di folder public, maka kita perlu menambahkan
+	//  code berikut yang bertujuan untuk memberitahu ke package express bahwasanya ada folder lain yang harus dirender pada project kita.
+
 
 	route.PathPrefix("/public/").Handler(http.StripPrefix("/public/",http.FileServer(http.Dir("./public"))))
 	
 	route.HandleFunc("/home",home).Methods("GET")
-
+	// route.HandleFunc("/home",addMyProject).Methods("POST")
 	route.HandleFunc("/editProject/{id}",editProject).Methods("GET")
-
+		// Metode HTTP POST mengirimkan data ke server.
+	// route.HandleFunc("/updateProject/{id}",updateProject).Methods("POST")
 	route.HandleFunc("/projectDetail/{id}",projectDetail).Methods("GET")
 	route.HandleFunc("/contactMe",contactMe).Methods("GET")
 	route.HandleFunc("/addProject",addProject).Methods("GET")
@@ -172,7 +176,10 @@ func projectDetail( w http.ResponseWriter, r *http.Request){
 	tmpl.Execute(w,resp)
 
 }
-
+// Nama route yang kita gunakan untuk menghandle proses menghapus data blog yaitu /delete-blog, 
+// kemudian diikuti /{index} agar kita dapat menangkap index yang dikirim melalui route/url. 
+// Untuk mengambil index yang dikirim, kita gunakan mux.Vars(r)["id"], 
+// jadi index tersebut tersimpan didalam request.
 func deleteProject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
@@ -184,6 +191,58 @@ func deleteProject(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/home", http.StatusFound)
 }
+// func updateProject(w http.ResponseWriter, r *http.Request) {
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}  
+//     projectName :=  r.PostForm.Get("name")
+// 	startDate := r.PostForm.Get("start-date")
+// 	endDate := r.PostForm.Get("end-date")
+// 	description := r.PostForm.Get("description")
+// 	checkbox := r.Form["checkbox"]
+// 	image := r.PostForm.Get("image")
+// 	startDateTime,_ := time.Parse("2006-01-02",startDate)
+// 	endDateTime,_ := time.Parse("2006-01-02",endDate)
+// 	distance := endDateTime.Sub(startDateTime)
+// 	var duration string
+// 	year := int(distance.Hours()/(12 * 30 * 24))
+// 	 if year != 0 {
+// 		duration = strconv.Itoa(year) + " tahun"
+// 	}else{
+// 		month := int(distance.Hours()/(30 * 24))
+// 		if month != 0 {
+// 			duration = strconv.Itoa(month) + " bulan"
+// 		}else{
+// 			week := int(distance.Hours()/(7 *24))
+// 			if week != 0 {
+// 				duration = strconv.Itoa(week) +  " minggu"
+// 			} else {
+// 				day := int(distance.Hours()/(24))
+// 				if day != 0 {
+// 					duration = strconv.Itoa(day) + " hari"
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	var newProject = dataInput {		
+// 		ProjectName: projectName,
+// 	    Description: description,
+// 	    Technologies: checkbox,
+// 		StartDate:startDate,
+//         EndDate:endDate,
+//         Duration: duration,
+// 	    Image: image,
+	
+// 	}
+
+
+// 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+// 	 dataInputs[id] = newProject
+	
+// 	http.Redirect(w,r,"/home",http.StatusMovedPermanently)
+// }
 
 func contactMe(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
